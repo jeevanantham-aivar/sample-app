@@ -1,33 +1,27 @@
 version: 0.2
 
-env:
-  variables:
-    # These must be set in the CodeBuild environment
-    # AWS_DEFAULT_REGION: "us-east-1"
-    # REPOSITORY_URI: "<account-id>.dkr.ecr.<region>.amazonaws.com/<repo>"
-    # SERVICE_NAME: "<ecs-service-name>"
-
 phases:
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
       - aws --version
-      - $(aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $REPOSITORY_URI)
+      - $(aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION)
+      - REPOSITORY_URI=$REPOSITORY_URI
       - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
-      - echo IMAGE_TAG=$IMAGE_TAG
   build:
     commands:
+      - echo Build started on `date`
       - echo Building the Docker image...
       - docker build -t $REPOSITORY_URI:latest .
       - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
   post_build:
     commands:
+      - echo Build completed on `date`
       - echo Pushing the Docker images...
       - docker push $REPOSITORY_URI:latest
       - docker push $REPOSITORY_URI:$IMAGE_TAG
-      - echo Writing imagedefinitions.json file...
-      - printf '[{"name":"%s","imageUri":"%s"}]' "$SERVICE_NAME" "$REPOSITORY_URI:$IMAGE_TAG" > imagedefinitions.json
-
+      - echo Writing imagedefinitions.json...
+      - printf '[{"name":"%s","imageUri":"%s:%s"}]' $SERVICE_NAME $REPOSITORY_URI $IMAGE_TAG > imagedefinitions.json
 artifacts:
   files:
     - imagedefinitions.json
