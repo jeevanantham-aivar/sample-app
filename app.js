@@ -7,7 +7,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.get('/', (req, res) => {
-  res.send('🚀 Hello from Sample App running on ECS Fargate!');
+  res.send('🚀 Hello from Sample App running on ECS Fargate! updated to check if it is working');
 });
 
 app.listen(PORT, () => {
