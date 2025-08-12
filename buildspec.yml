@@ -36,6 +36,8 @@ env:
     AWS_DEFAULT_REGION: ap-south-1 # change as needed
     REPOSITORY_URI: 302263040839.dkr.ecr.ap-south-1.amazonaws.com/sample-app-repo
     SERVICE_NAME: sample-app-service # must match container name in ECS task definition
+    CLUSTER_NAME: sample-app-cluster
+    CONTAINER_NAME: sample-app-service
 
 phases:
   pre_build:
