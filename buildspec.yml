@@ -3,17 +3,18 @@ version: 0.2
 env:
   variables:
     AWS_DEFAULT_REGION: ap-south-1
-    REPOSITORY_URI: 302263040839.dkr.ecr.ap-south-1.amazonaws.com/sample-app-repo # ECR repo URI
-    CLUSTER_NAME: sample-app-cluster               # ECS cluster name
-    SERVICE_NAME: sample-app-service               # ECS service name
-    CONTAINER_NAME: sample-app-service             # Container name in ECS task definition
+    REPOSITORY_URI: 302263040839.dkr.ecr.ap-south-1.amazonaws.com/sample-app-repo
+    CLUSTER_NAME: sample-app-cluster
+    SERVICE_NAME: sample-app-service
+    CONTAINER_NAME: sample-app-service  # Must match ECS task definition
 
 phases:
   pre_build:
     commands:
       - echo "Logging in to Amazon ECR..."
       - aws --version
-      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $REPOSITORY_URI
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | \
+        docker login --username AWS --password-stdin $REPOSITORY_URI
       - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - echo "IMAGE_TAG=$IMAGE_TAG"
 
@@ -32,9 +33,14 @@ phases:
       - docker push $REPOSITORY_URI:$IMAGE_TAG
 
       - echo "Writing imagedefinitions.json..."
-      - printf '[{"name":"%s","imageUri":"%s"}]' "$CONTAINER_NAME" "$REPOSITORY_URI:$IMAGE_TAG" > imagedefinitions.json
+      # Correct printf syntax — colon outside quotes, separate arguments
+      - printf '[{"name":"%s","imageUri":"%s:%s"}]' "$CONTAINER_NAME" "$REPOSITORY_URI" "$IMAGE_TAG" > imagedefinitions.json
+
       - echo "Contents of imagedefinitions.json:"
       - cat imagedefinitions.json
+
+      # Optional — validate JSON now to avoid ECS deploy failures
+      - jq . imagedefinitions.json || { echo "Invalid imagedefinitions.json"; exit 1; }
 
 artifacts:
   files:
