@@ -7,7 +7,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.get('/', (req, res) => {
-  res.send('🚀 n ECS Fargate! added  added pipeline and chec   king whether a pipeline is working or not ');
+  res.send(' n ECS Faghhghghgghghrgate! added  added pipeline and chec   king whether a pipeline is working or not ');
 });
 
 app.listen(PORT, () => {
