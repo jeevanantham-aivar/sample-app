@@ -7,7 +7,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.get('/', (req, res) => {
-  res.send(' for checking psddsadfasfdasfjsdjhfahjakhkdfafasjkjhjwkdhfkjajkdhfjkajkdfhawfwjadsfhdmsndshajsdfhkahdfjhasfadfadmnsdadfakhdfaafaurpose');
+  res.send(' for jadfjajdfhajkdhfkjasaskahdfjhasfadfadmnsdadfakhdfaafaurpose');
 });
 
 app.listen(PORT, () => {
