@@ -7,7 +7,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.get('/', (req, res) => {
-  res.send(' vignesh  added pipeline and chec   king whether a pipeline is working or not ');
+  res.send(' for checking purpose');
 });
 
 app.listen(PORT, () => {
